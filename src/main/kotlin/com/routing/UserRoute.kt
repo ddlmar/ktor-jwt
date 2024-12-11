@@ -22,44 +22,37 @@ fun Route.userRoute(userService: UserService) {
         )
 
         call.response.header(
-            name = "id",
-            value = createUser.id.toString()
+            name = "id", value = createUser.id.toString()
         )
 
         call.respond(
             message = HttpStatusCode.Created
         )
+    }
 
-        get {
-            val users = userService.findAll()
+    get {
+        val users = userService.findAll()
 
-            call.respond(
-                message = users.map(User::toResponse)
-            )
-        }
+        call.respond(
+            message = users.map(User::toResponse)
+        )
+    }
 
-        get("/{id}") {
-            val id: String = call.parameters["id"]
-                ?: return@get call.respond(HttpStatusCode.BadRequest)
+    get("/{id}") {
+        val id: String = call.parameters["id"] ?: return@get call.respond(HttpStatusCode.BadRequest)
 
-            val foundUser = userService.findById(id)
-                ?: return@get call.respond(HttpStatusCode.NotFound)
+        val foundUser = userService.findById(id) ?: return@get call.respond(HttpStatusCode.NotFound)
 
-            call.respond(
-                message = foundUser.toResponse()
-            )
-        }
+        call.respond(
+            message = foundUser.toResponse()
+        )
     }
 }
 
 private fun UserRequest.toModel(): User = User(
-    id = UUID.randomUUID(),
-    username = this.username,
-    password = this.password
+    id = UUID.randomUUID(), username = this.username, password = this.password
 )
 
-private fun User.toResponse(): UserResponse =
-    UserResponse(
-        id = this.id,
-        username = this.username
-    )
+private fun User.toResponse(): UserResponse = UserResponse(
+    id = this.id, username = this.username
+)
